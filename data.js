@@ -1,18 +1,13 @@
 let books = [
   {
     "id": 1,
-    "title": "Senja",
+    "title": "Soto Ayam",
     "author": "Sagas Andreas"
   },
   {
     "id": 2,
-    "title": "Mentari",
+    "title": "Nasi Goreng",
     "author": "Lyran Calista"
-  },
-  {
-    "id": 1748164899678,
-    "title": "Laut Biru",
-    "author": "Agaskar"
   }
 ];
 module.exports = { books };
