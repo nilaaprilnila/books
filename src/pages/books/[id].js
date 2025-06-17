@@ -1,87 +1,82 @@
-import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
-import { getBooks, updateBooks } from '../../../lib/api/books';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 
 export default function EditBook() {
   const router = useRouter();
   const { id } = router.query;
-  const [book, setBook] = useState({ title: '', author: '' });
+
+  const [title, setTitle] = useState("");
+  const [author, setAuthor] = useState("");
+  const [genre, setGenre] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchBook = async () => {
-      if (!id) return;
-      try {
-        const res = await fetch(`/api/books/${id}`);
-        const data = await res.json();
-        setBook(data);
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching book:', error);
-        setLoading(false);
-      }
-    };
-    fetchBook();
+    if (id) {
+      fetch(`/api/books/${id}`)
+        .then(res => res.json())
+        .then(data => {
+          setTitle(data.title);
+          setAuthor(data.author);
+          setGenre(data.genre || "");
+          setLoading(false);
+        });
+    }
   }, [id]);
-
-  const handleChange = (e) => {
-    setBook({ ...book, [e.target.name]: e.target.value });
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await fetch(`/api/books/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(book)
+    const res = await fetch(`/api/books/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title, author, genre }),
     });
-    router.push('/books');
+
+    if (res.ok) router.push("/books");
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
-        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white to-blue-50 px-4">
-      <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full">
-        <h1 className="text-2xl md:text-3xl font-bold text-center text-gray-900 mb-6">Edit Buku</h1>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-gray-700 font-medium mb-1">Judul Buku</label>
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
+      <div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-md">
+        <h1 className="text-2xl font-bold text-blue-700 mb-6 text-center">Edit Buku 📘</h1>
+
+        {loading ? (
+          <p className="text-center text-gray-500">Memuat data buku...</p>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-4">
             <input
               type="text"
-              name="title"
-              value={book.title}
-              onChange={handleChange}
-              placeholder="Masukkan judul buku"
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Judul Buku"
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
               required
             />
-          </div>
-          <div>
-            <label className="block text-gray-700 font-medium mb-1">Penulis</label>
+
             <input
               type="text"
-              name="author"
-              value={book.author}
-              onChange={handleChange}
-              placeholder="Masukkan nama penulis"
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={author}
+              onChange={(e) => setAuthor(e.target.value)}
+              placeholder="Nama Penulis"
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
               required
             />
-          </div>
-          <button
-            type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition"
-          >
-            Simpan Perubahan
-          </button>
-        </form>
+
+            <input
+              type="text"
+              value={genre}
+              onChange={(e) => setGenre(e.target.value)}
+              placeholder="Genre (Opsional)"
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+
+            <button
+              type="submit"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition duration-200"
+            >
+              Simpan Perubahan 
+            </button>
+          </form>
+        )}
       </div>
     </div>
   );
