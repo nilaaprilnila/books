@@ -6,7 +6,6 @@ export default function BookList() {
   const [searchTerm, setSearchTerm] = useState('');
   const [error, setError] = useState(null);
 
-  // Ambil data buku dari API
   useEffect(() => {
     fetch('/api/books')
       .then(res => res.json())
@@ -14,7 +13,6 @@ export default function BookList() {
       .catch(err => setError(err.message || 'Gagal memuat data buku'));
   }, []);
 
-  // Fungsi untuk menghapus buku
   const deleteBook = async (id) => {
     try {
       await fetch(`/api/books/${id}`, { method: 'DELETE' });
@@ -25,7 +23,6 @@ export default function BookList() {
     }
   };
 
-  // Filter buku berdasarkan pencarian dengan aman
   const filteredBooks = books.filter(book =>
     book.title &&
     typeof book.title === 'string' &&
@@ -33,12 +30,12 @@ export default function BookList() {
   );
 
   return (
-    <div className="max-w-4xl mx-auto px-6 py-8">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-4xl font-bold text-gray-900">Daftar Buku</h1>
+    <div className="max-w-5xl mx-auto px-6 py-10">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold text-gray-800">📚 Daftar Buku</h1>
         <Link
           href="/books/add"
-          className="bg-blue-600 text-white px-5 py-2 rounded-lg shadow hover:bg-blue-700 transition"
+          className="inline-block bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-5 py-2.5 rounded-lg shadow transition-all"
         >
           + Tambah Buku
         </Link>
@@ -46,41 +43,37 @@ export default function BookList() {
 
       <input
         type="text"
-        placeholder="Cari judul buku..."
-        className="w-full mb-6 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+        placeholder="🔍 Cari judul buku..."
+        className="w-full mb-6 px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
         value={searchTerm}
         onChange={e => setSearchTerm(e.target.value)}
       />
 
-      {error && (
-        <div className="text-red-600 text-sm mb-4">{error}</div>
-      )}
-
       {filteredBooks.length === 0 ? (
-        <p className="text-center text-gray-500">Belum ada buku.</p>
+        <p className="text-center text-gray-500 text-sm">Belum ada buku yang ditemukan.</p>
       ) : (
         <ul className="space-y-4">
           {filteredBooks.map(b => (
-            <li key={b.id} className="flex justify-between items-center p-4 border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition">
+            <li key={b.id} className="flex justify-between items-start p-5 border border-gray-200 rounded-lg bg-white shadow hover:shadow-md transition-all">
               <div>
                 <Link
                   href={`/books/${b.id}`}
-                  className="text-xl font-semibold text-blue-700 hover:underline"
+                  className="block text-lg font-semibold text-blue-700 hover:underline"
                 >
                   {b.title}
                 </Link>
-                <p className="text-sm text-gray-600">oleh {b.author}</p>
+                <p className="text-sm text-gray-600 mt-1">🖋️ oleh {b.author}</p>
               </div>
-              <div className="flex space-x-3">
+              <div className="flex space-x-3 mt-2 sm:mt-0">
                 <Link
                   href={`/books/${b.id}`}
-                  className="bg-blue-600 text-white px-5 py-2 rounded-lg shadow hover:bg-blue-700 transition"
+                  className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1.5 text-sm rounded-lg transition"
                 >
                   Edit
                 </Link>
                 <button
                   onClick={() => deleteBook(b.id)}
-                  className="text-sm bg-red-600 text-white px-4 py-1 rounded-md hover:bg-red-700 transition"
+                  className="bg-red-500 hover:bg-red-600 text-white px-4 py-1.5 text-sm rounded-lg transition"
                 >
                   Hapus
                 </button>
